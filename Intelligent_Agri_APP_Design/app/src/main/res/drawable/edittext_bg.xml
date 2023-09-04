@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle"
+            xmlns:android="http://schemas.android.com/apk/res/android">
+            <!--圆角弧度-->
+            <corners android:radius="5dp"/>
+
+            <!--颜色-->
+            <solid android:color="#F1E8E8"/>
+
+            <!--边框宽度 虚线长度-->
+            <stroke
+                android:width="2dp"
+                android:dashWidth="0dp"
+                android:dashGap="4dp"
+                android:color="#D32F2F"
+                />
+        </shape>
+    </item>
+    <item android:state_focused="false">
+        <shape android:shape="rectangle"
+            xmlns:android="http://schemas.android.com/apk/res/android">
+            <!--圆角弧度-->
+            <corners android:radius="5dp"/>
+
+            <!--颜色-->
+            <solid android:color="#F1E8E8"/>
+
+            <!--边框宽度 虚线长度-->
+            <stroke
+                android:width="2dp"
+                android:dashWidth="0dp"
+                android:dashGap="4dp"
+                android:color="#6D6F72"
+                />
+        </shape>
+    </item>
+</selector>

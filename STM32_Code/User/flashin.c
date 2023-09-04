@@ -1,0 +1,162 @@
+#include "flashin.h"
+
+
+unsigned short  bit16[30];
+
+ 
+
+
+/***********
+密码设置保存在第63K空间中，起始地址为((uint32_t)0x0800FC00)；
+号码设置保存在第63K空间中，起始地址为((uint32_t)0x0800FC00)；
+
+密码设置存储格式：                         
+setflag+                                                                  1字节  0x0800F800
+passward[6]+                                                              6字节  0x0800F802--0x0800F807
+systemconfig[10]+                                                         10字节 0x0800F808--0x0800F811
+number0[11]                                                               12字节 0x0800F812--0x0800F81D
+
+号码存储格式：   
+number1[11]+number2[11]+number3[11]+number4[11]+number5[11]+              60字节 0x0800FC00+0x0800FC47
+police1[11]+police2[11]+police3[11]+police4[11]+police5[11]+              60字节 0x0800FC48+0x0800FC83
+white1[11]+white2[11]+white3[11]+white4[11]+white5[11]                    60字节 0x0800FC84+0x0800FCBF
+
+说明：
+若setflag为0x00,则说明已经设置过密码
+若setflag为0xff,表示尚未进行密码配置，可将默认密码写入
+
+systemconfig[10]=in1[1]+in2[1]+in3[1]+in4[1]+out1[1]+out2[1]+alarm[1]+lamp[1]+预留[2]
+
+***********/
+
+
+
+/*
+定时模式存储在第64K，起始地址为((uint32_t)0x0800FC00)；
+共占用4字节，定时基数占用2字节，检测是否为第一次上电1字节，共7字节。即0x0800FC00~0x0800FC06;
+
+*/
+
+
+uint8_t Flash_Buf[Flash_Buf_Max];
+
+/**
+*@brief  	多页擦除
+*@param		Address: 擦除起始页地址
+*@param		NbPage: 擦除页数
+*@return	无
+*/
+void FlashIn_Erase_Page(uint32_t Start_Addr,uint8_t NbPage)
+{
+  uint32_t PageError = 0; 
+	FLASH_EraseInitTypeDef EraseInitStruct;
+	
+	HAL_FLASH_Unlock();	
+				
+  EraseInitStruct.TypeErase = FLASH_TYPEERASE_PAGES;
+	
+  EraseInitStruct.PageAddress = Start_Addr;
+	
+  EraseInitStruct.NbPages = NbPage;
+	
+  HAL_FLASHEx_Erase(&EraseInitStruct,&PageError);
+	
+	HAL_FLASH_Lock(); 
+}
+/**
+*@brief  	单字节读取内部flash
+*@param		Address: 读取地址
+*@return	地址所存储的值
+*/
+static void FlashIn_Write_Byte(__IO uint32_t Address,uint8_t datas)
+{  
+	 *(__IO uint8_t *)Address=datas;  
+}
+
+
+
+
+void FlashIn_Write_NByte(__IO uint32_t Address,uint8_t* datas,uint8_t NByte)
+{
+  uint8_t i;
+	
+   HAL_FLASH_Unlock();	
+	
+	for(i=0;i<NByte;i+=2){
+	  
+		
+		HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD,Address+i,(*(datas+1)<<8)|*(datas));
+	  //printf("temp=0x%x\r\n",(*(datas+1)<<8)|*(datas));
+	  datas+=2;
+		
+	}
+	
+  HAL_FLASH_Lock();			
+}
+
+/**
+*@brief  	单字节读取内部flash
+*@param		Address: 读取地址
+*@return	地址所存储的值
+*/
+static uint8_t FlashIn_Read_Byte(__IO uint32_t Address)
+{  
+	return *(__IO uint8_t *)Address;  
+}
+
+
+
+/**
+*@brief  	多字节读取内部flash
+*@param		Address: 读取开始地址
+*@param   NByte  ：读取字节数（不大于缓冲区）
+*@return	无
+*/
+void FlashIn_Read_NByte(uint32_t Start_Addr,uint16_t NByte)
+{
+	 uint16_t i;
+   if(NByte>=Flash_Buf_Max) NByte=Flash_Buf_Max-1;
+		 
+	 for(i=0;i<NByte;i++)   			 
+			 {
+				 Flash_Buf[i]=FlashIn_Read_Byte(Start_Addr++);	
+        // printf("flash_buf=%x\r\n",Flash_Buf[i]);
+			 }
+}
+
+uint32_t Get_UDID(void)
+{
+			
+	FlashIn_Read_NByte((uint32_t)0x1FFFF7AC,12);//UDID所在的地址
+	
+//	printf(">>>ALL_UDID=%02x%02x%02x%02x%02x%02x",Flash_Buf[11],Flash_Buf[10],Flash_Buf[9],Flash_Buf[8],Flash_Buf[7],Flash_Buf[6]);
+//	printf("%02x%02x%02x%02x%02x%02x\r\n",Flash_Buf[5],Flash_Buf[4],Flash_Buf[3],Flash_Buf[2],Flash_Buf[1],Flash_Buf[0]);
+//  return  *(__IO uint32_t *)(0x1FFFF7AC); 	
+	return  (uint32_t)Flash_Buf[5]<<24|(uint32_t)Flash_Buf[2]<<16|(uint32_t)Flash_Buf[4]<<8|(uint32_t)Flash_Buf[0];
+}
+
+
+
+
+void bit8tobit16(unsigned char* bit8,unsigned short* bit16,unsigned char bit8len)
+{
+ unsigned char bit16h=0,bit16l=0;
+		
+	
+	while((*bit8)&&(bit8len))
+	{
+	 bit16h=*bit8;
+	// usart_txdat(2,*bit8);
+	 bit8++;
+	 bit16l=*bit8;		
+	// usart_txdat(2,*bit8);
+	// usart_txdat(2,0x0a);	
+   *bit16=bit16l<<8|bit16h;//符合STM32flash读写顺序规则，小端先出
+		
+	 bit8++;
+   bit16++;	
+   bit8len--; 		
+	}
+}
+
+

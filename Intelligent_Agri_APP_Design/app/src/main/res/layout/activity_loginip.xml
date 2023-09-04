@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".LoginIpActivity"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:orientation="vertical"
+        android:layout_width="333dp"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/kongqibeijing"
+        android:gravity="center_horizontal"
+        android:padding="10dp">
+        <TextView
+            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dset"
+            android:textSize="20sp"
+            style="@style/ipNotitle"
+            android:textColor="#000000"
+            />
+        <ImageView
+            android:layout_marginTop="13dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line01"
+            />
+        <EditText
+            android:singleLine="true"
+            android:inputType="number"
+            android:digits="0123456789."
+            android:id="@+id/login_et01"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:hint="请输入设备上显示的IP地址"
+            android:textColor="#000000"
+            android:textColorHint="#c6c6cf"
+            android:paddingLeft="10dp"
+            android:text="1.1.2.3"
+            android:background="@color/transparent"
+            />
+        <ImageView
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line01"
+            />
+
+        <Button
+            android:id="@+id/login_btn01"
+            android:layout_width="330dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/button_fillet"
+            android:text="@string/dsure"
+            android:textColor="#ffffff"
+            android:textSize="25sp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

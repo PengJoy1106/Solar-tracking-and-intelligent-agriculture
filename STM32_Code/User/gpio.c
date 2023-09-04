@@ -1,0 +1,81 @@
+#include "gpio.h"
+
+
+
+
+
+void GPIO_Config(void)
+{
+ GPIO_InitTypeDef GPIO_InitStructure;
+
+	__HAL_RCC_LED_CLK_ENABLE();//开PA口时钟
+	
+	__HAL_RCC_DEV_CLK_ENABLE();
+
+	__HAL_RCC_SENSOR_PORT_CLK_ENABLE();
+	
+	
+	GPIO_InitStructure.Pin=LED1_PIN|LED2_PIN;             
+	GPIO_InitStructure.Mode=GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStructure.Pull=GPIO_PULLUP;
+	GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH;	
+	HAL_GPIO_Init(LED_PORT, &GPIO_InitStructure);	
+
+	GPIO_InitStructure.Pin=BEEP_PIN;             
+	GPIO_InitStructure.Mode=GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStructure.Pull=GPIO_PULLUP;
+	GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH;	
+	HAL_GPIO_Init(SENSOR_PORT, &GPIO_InitStructure);		
+	
+	FAN_OFF;
+	GPIO_InitStructure.Pin=FAN_PIN;             
+	GPIO_InitStructure.Mode=GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStructure.Pull=GPIO_PULLUP;
+	GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH;	
+	HAL_GPIO_Init(DEV_PORT, &GPIO_InitStructure);		
+
+
+	GPIO_InitStructure.Pin=IR_PIN;             
+	GPIO_InitStructure.Mode=GPIO_MODE_INPUT;
+	GPIO_InitStructure.Pull=GPIO_PULLUP;
+	GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH;	
+	HAL_GPIO_Init(SENSOR_PORT, &GPIO_InitStructure);		
+
+	
+	
+	
+	BEEP_OFF;LED1_ON;LED2_OFF;
+	
+
+}
+	
+
+///********************************
+//*函数：Check_Ir(void)
+//*
+//*功能：人体红外感应器，cnt_ir非0 1毫秒自减
+//*
+//*return：是否有人状态
+//*********************************/
+//unsigned char Check_Ir(void)
+//{
+//    unsigned char status;
+
+//			status=READ_IR;//获取人感状态
+
+//			 if(status==0){//检测到低电平
+//			 
+//				  if(cnt_ir!=0){//滤波计数值不为0，说明30s还未结束，标志位有人输出.cnt_ir在中断中自减
+//							
+//					    status=1;	
+//					}
+//			 
+//			 }else{
+//				 
+//			      cnt_ir=30000; 
+//			 }
+//			 
+//			 return status;
+//}
+
+

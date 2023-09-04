@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">I-Agri</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="item2_a">湿度:</string>
+    <string name="item2">环境湿度</string>
+    <string name="item2_0">当前环境湿度:</string>
+    <string name="item2_1">正常环境湿度:</string>
+    <string name="item2_2">环境湿度值:</string>
+    <string name="item2_3">光照强度当前状态:</string>
+    <string name="item2_4">光照强度设置</string>
+    <string name="item1_a">温度</string>
+    <string name="item1_0">温度:</string>
+    <string name="item1">环境温度</string>
+    <string name="item1_1">当前环境温度：</string>
+    <string name="item1_2">环境温度值值:</string>
+    <string name="item1_3">环境温度当前状态:</string>
+    <string name="item1_4">环境温度设置</string>
+    <string name="item1_5">温度设定范围 :</string>
+    <string name="item3_0">温度</string>
+    <string name="item3_1">温度设定值：</string>
+    <string name="item3_2">温度设定范围 :</string>
+    <string name="item4_0">湿度</string>
+    <string name="item4_1">湿度设定值：</string>
+    <string name="item4_2">湿度设定范围 :</string>
+    <string name="item5_0">空气指数</string>
+    <string name="item6_0">土壤指数</string>
+    <string name="setname">设定值:</string>
+    <string name="item7">空气温度设置</string>
+    <string name="item7_1">当前空气温度：</string>
+    <string name="item7_2">当前空气湿度：</string>
+    <string name="item7_3">空气湿度值：</string>
+    <string name="item7_4">空气湿度当前状态:</string>
+    <string name="item7_5">空气温度值：</string>
+    <string name="item7_6">空气温度当前状态:</string>
+    <string name="item8">土壤温度设置</string>
+    <string name="item8_a0">当前土壤温度：</string>
+    <string name="item8_b0">当前土壤湿度：</string>
+    <string name="item9">手动控制</string>
+    <string name="dmin">最小值:</string>
+    <string name="dmax">最大值:</string>
+    <string name="dsure">确定</string>
+    <string name="dset">欢迎您,请先登录服务器IP</string>
+    <string name="dtitile">关于我们</string>
+    <string name="dmove">退出登录</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

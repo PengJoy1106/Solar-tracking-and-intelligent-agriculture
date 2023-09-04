@@ -1,0 +1,80 @@
+//项目：STM32F0内外部时钟配置
+//作者：隔壁老谢
+//功能：使用宏开关对内外部时钟进行选择，外部晶振为12MHz,均通过PLL配置系统时钟为48MHz.
+//版本：V20161111
+
+#include "rcc.h"
+
+#define OSC 0x01        //晶振晶振选择
+#define Inside_OSC 0x00  //内部晶振
+#define External_OSC 0x01//外部晶振
+
+
+unsigned char SystemClock_Config(void)
+{				
+#if (OSC == Inside_OSC)//使用内部晶振
+		{ 
+			RCC_OscInitTypeDef RCC_OscInitStruct;
+			RCC_ClkInitTypeDef RCC_ClkInitStruct;
+						
+			RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;//无晶振类型
+			RCC_OscInitStruct.HSIState=RCC_HSI_ON;//开启内部晶振	
+			
+			RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;//开启锁相环
+			RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;//锁相环时钟源为HSI
+			RCC_OscInitStruct.PLL.PREDIV = RCC_PREDIV_DIV1;//分频因子
+			RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL12;//倍频因子8X6=48MHz
+			if (HAL_RCC_OscConfig(&RCC_OscInitStruct)!= HAL_OK)
+			{
+			 return 0; // Error_Handler();
+			}		
+			RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1);/*系统时钟、总线时钟、外设时钟**/
+			RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;////系统时钟源
+			RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;//分频因子
+			RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;//倍频因子		
+			if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1)!= HAL_OK)
+			{
+			 return 0;// Error_Handler();
+			}
+		   SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk;//使能SysTick定时器
+			return 1;
+    }
+	
+#elif (OSC==External_OSC)//使用外部晶振
+		{
+			RCC_OscInitTypeDef RCC_OscInitStruct;
+			RCC_ClkInitTypeDef RCC_ClkInitStruct;
+			/********************时钟源选择***************/			
+			RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;//晶振类型:外部晶振，上电默认采用内部晶振
+			RCC_OscInitStruct.HSEState=RCC_HSE_ON;//开启外部晶振		
+			
+			RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;//开锁相环
+		  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;//锁相环时钟源
+		  RCC_OscInitStruct.PLL.PREDIV = RCC_PREDIV_DIV1;//分频因子
+		  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL4;//倍频因子,4X12MHz=48MHz		
+			if (HAL_RCC_OscConfig(&RCC_OscInitStruct)!= HAL_OK)//载入晶振参数			
+			{
+				
+				return 0;// Error_Handler();//载入失败处理
+			}		
+			/* ******************时钟设置***************/			
+			
+			RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1);/*系统时钟、总线时钟、外设时钟**/			
+			RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;//系统时钟源
+			RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;//系统时钟由AHB总线分频器分频
+			RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;//外设时钟由APB外设分频器分频
+			if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1)!= HAL_OK)
+			{	
+				return 0;// Error_Handler();//载入失败处理
+			}
+      
+		 // SysTick->CTRL&=~SysTick_CTRL_ENABLE_Msk;//关闭SysTick定时器
+			SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk;//使能SysTick定时器	
+			return 1;							
+		}	
+#endif	
+}
+
+
+
+

@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.helpFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#e0e0e0" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="操作指引"
+                android:textColor="#515151"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/zhiyin1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/yuan1"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="1.操作指南一"
+                android:textColor="#fff"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/zhiyinimg1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:src="@mipmap/xiangxia" />
+
+            <LinearLayout
+                android:id="@+id/content1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_margin="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="@mipmap/bbxy" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="智能农业"
+                        android:textColor="#181818" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="本APP是基于课题“基于物联网技术的智能农业管理系统”设计的软件，代码已在GitHub上开源，设计稍有不足，请勿商用。"
+                        android:textColor="#181818" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/zhiyin2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/yuan1"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="2.操作指南二"
+                android:textColor="#fff"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/zhiyinimg2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:src="@mipmap/xiangxia" />
+
+            <LinearLayout
+                android:id="@+id/content2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_margin="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="@mipmap/bbxy" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="在首页，可以实时查看各种环境参数的具体值"
+                        android:textColor="#181818" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/zhiyin3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/yuan1"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="3.操作指引三"
+                android:textColor="#fff"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/zhiyinimg3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:src="@mipmap/xiangxia" />
+
+            <LinearLayout
+                android:id="@+id/content3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_margin="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="@mipmap/bbxy" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="点击每一个环境参数框，可以进入控制界面，在里面可以对环境进行控制，如打开风扇等……"
+                        android:textColor="#181818" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/zhiyin4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/yuan1"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="4.操作指南四"
+                android:textColor="#fff"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/zhiyinimg4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:src="@mipmap/xiangxia" />
+
+            <LinearLayout
+                android:id="@+id/content4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_margin="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="@mipmap/bbxy" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="在设置菜单里，点击自动控制，可以设置每个环境参数的阈值，通过设置参数阀值来改变状态"
+                        android:textColor="#181818" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/zhiyin5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/yuan1"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="5.操作指引五"
+                android:textColor="#fff"
+                android:textSize="15sp" />
+
+
+            <LinearLayout
+                android:id="@+id/content5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:visibility="gone">
+
+                <ImageView
+
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_margin="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="@mipmap/bbxy" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="在设置菜单里，可以清除缓存和退出登录。"
+                        android:textColor="#181818" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

@@ -1,0 +1,405 @@
+/*
+-----------------------------------------------------------
+项目：STM32-ALARM-SYSTEM
+
+版本：V20180927
+
+功能：2个节点分别采集温度、气体的信息，回传给主机，主机根据信息判断是否报警，并发送短信。节点可通过按键开关告警功能，主机可设置阈值为0表示关闭该项告警
+
+策略：采用分时复用的方式实现，主机发送同步符，节点1立即回复、节点2隔100ms回复数据。
+
+协议： 主机发送 ：‘s’+'y'+'n'+ point1_beep +point2_beep +point3_beep+ max_wendu +  max_qiti;
+
+       节点一  100毫秒后回复：ID+ID+ID+NULL+Temperature+GAS
+			 节点二  200毫秒后回复：ID+ID+ID+NULL+Temperature+GAS
+-----------------------------------------------------------
+*/
+
+#include "app.h"         //头文件管理
+
+unsigned char bad_wendu1=0,bad_wendu2=0,bad_qiti1=0,bad_qiti2=0;
+
+unsigned char temperature[3],gas[3];
+unsigned char gas_bi;
+unsigned int  adc;
+unsigned char max_wendu=50,max_qiti=20;//温度阈值、气体阈值
+unsigned char point_beep[3];//节点蜂鸣器告警标志
+
+unsigned int  cnt_beep;//蜂鸣器计时
+unsigned int  cnt_syn; //同步计时
+unsigned int  cnt_check_point;//查询节点计数值
+unsigned int  cnt_check; //查询倒计时
+unsigned int  cnt_display=0;   //显示更新计数值
+
+unsigned char flag_check;//查询标志位
+unsigned char flag_beep;//蜂鸣器报警标志位
+unsigned char flag_alarm[3]={1,1,1};//告警开关
+
+unsigned char mode_set=0;//按键设置
+unsigned char shift_display=0; //显示翻转标志位
+unsigned char mode_display=0;  //显示模式
+
+
+
+
+
+/********************************
+*函数：App_GetSensor_Point(void)
+*
+*功能：节点传感器数据采集，频率1s/次
+*********************************/
+void App_GetSensor_Point(void)
+{
+	 if(timer3cnt>1000) //1秒时间到，启动采集程序并填充到发送数组
+			{ 															
+				
+				DHT11_Read();        //读取温湿度值
+		
+				Get_CO2(UART1);
+
+			  timer3cnt=0;																			//计数器自增防止1ms内重复进入此if。	 
+		 }
+}
+
+
+
+
+/********************************
+*函数：App_Key_Point(void)
+*
+*功能：节点按键进程，用于开关告警功能
+*********************************/
+void App_Key_Point(void)
+{	
+    keyscan();
+	
+	  if(key_flag==1){//如果按键按下
+		   
+			 key_flag=0;
+			
+			 if(flag_alarm[0]==1){//如果当前是允许报警
+			 
+			     flag_alarm[0]=0;//关闭报警
+				   LED1_OFF;LED2_OFF;//关闭节点的灯
+				   BEEP_OFF;
+			 }else{
+			     flag_alarm[0]=1;//否则开启报警
+				    LED1_ON;LED2_ON;//开启节点的灯
+				    BEEP_OFF;
+			 }				
+		}
+	
+}
+
+
+
+/********************************
+*函数：App_Key_Master(void)
+*
+*功能：主机按键进程，用于设置告警功能
+*********************************/
+void App_Key_Master(void)
+{	
+	key_value=keyscan();//按键扫描
+
+	switch(key_value)
+		{
+
+		  case 0: 
+				 
+			break;
+
+			case VALUE_C://S1
+	
+			      mode_set++;
+			
+			     switch(mode_set)
+					 {
+						 case 1:
+							     	OLED_CLS();     
+
+						       
+     						      OLED_P8x16Str(0,2,"Gas  Max:  %");
+
+											OLED_P8x16(72,2,&num[max_qiti/10]);
+											OLED_P8x16(80,2,&num[max_qiti%10]);						
+						 
+						 break;
+						 
+						 case 2: 
+                     	OLED_P8x16Str(0,6,"Temp Max:  C");
+						 
+											OLED_P8x16(72,6,&num[max_wendu/10]);
+											OLED_P8x16(80,6,&num[max_wendu%10]);	
+						 
+						 break;		
+
+						 case 3:
+							 
+						      
+						         mode_set=0;
+
+									FlashIn_Erase_Page(FLASH_USER_ADDRESS,1);
+								
+									 HAL_FLASH_Unlock();
+								
+										HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD,FLASH_USER_ADDRESS,(max_qiti<<8)|max_qiti);//上电检测位置类型
+                    HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD,FLASH_USER_ADDRESS+2,(max_wendu<<8)|max_wendu);//上电检测位置类型
+						 
+														 
+									HAL_FLASH_Lock();																		 
+													 
+									FlashIn_Read_NByte(FLASH_USER_ADDRESS,4);	
+
+									 max_qiti=Flash_Buf[0];
+									 max_wendu=Flash_Buf[2];
+
+									bad_wendu1=0;
+									bad_wendu2=0;
+									bad_qiti1=0;
+									bad_qiti2=0;
+									
+									mode_display=0;
+									shift_display=0;
+									App_Display_Sensor_Config();                
+							
+			
+						 break;					 
+					 	 				 
+					 } 
+					 			     
+			break;			
+			      
+			        
+			case VALUE_A:
+				
+                switch(mode_set)
+								{
+									case 1:
+										     max_qiti++;if(max_qiti>99)max_qiti=0;
+											OLED_P8x16(72,2,&num[max_qiti/10]);
+											OLED_P8x16(80,2,&num[max_qiti%10]);										
+							
+									
+									break;
+									
+									case 2:
+										     max_wendu++;if(max_wendu>99)max_wendu=0;
+											OLED_P8x16(72,6,&num[max_wendu/10]);
+											OLED_P8x16(80,6,&num[max_wendu%10]);								
+									break;
+								}
+					
+			break;
+								
+			case VALUE_B:
+				
+                switch(mode_set)
+								{
+									case 1:
+										     max_qiti--;if(max_qiti==255)max_qiti=99;
+											OLED_P8x16(72,2,&num[max_qiti/10]);
+											OLED_P8x16(80,2,&num[max_qiti%10]);								
+									
+									break;
+									
+									case 2:
+										     max_wendu--;if(max_wendu==255)max_wendu=99;
+											OLED_P8x16(72,6,&num[max_wendu/10]);
+											OLED_P8x16(80,6,&num[max_wendu%10]);								
+									break;		
+								}
+					
+			break;								
+								
+			
+			default:
+				
+			break;
+		}
+	
+}
+
+
+
+
+
+
+/********************************
+*函数：App_Display_Sensor_Config(void)
+*
+*功能：传感器显示初始化
+*********************************/
+void App_Display_Sensor_Config(void)
+{	
+	
+   	OLED_CLS();
+	
+	OLED_P8x16Str(0,0,"G1:  %  G2:  %");
+	OLED_P8x16Str(0,2,"T1:  C  T2:  C");
+	OLED_P8x16Str(0,4,"Gas  Max:  %");	
+	OLED_P8x16Str(0,6,"Temp Max:  C");
+
+		FlashIn_Read_NByte(FLASH_USER_ADDRESS,4);	
+
+		if(Flash_Buf[0]!=0xff&&Flash_Buf[1]!=0xff)
+		{
+			 max_qiti=Flash_Buf[0];
+			 max_wendu=Flash_Buf[2];	
+		}
+		
+   App_Display_Sensor();
+}
+
+
+
+
+/********************************
+*函数：App_Display_Sensor(void)
+*
+*功能：传感器显示
+*********************************/
+void App_Display_Sensor(void)
+{	
+	
+		OLED_P8x16(72,4,&num[max_qiti/10]);
+		OLED_P8x16(80,4,&num[max_qiti%10]);
+		OLED_P8x16(72,6,&num[max_wendu/10]);
+		OLED_P8x16(80,6,&num[max_wendu%10]);				
+		
+		
+		OLED_P8x16(24,0,&num[gas[1]/10]);
+		OLED_P8x16(32,0,&num[gas[1]%10]);	
+		OLED_P8x16(88,0,&num[gas[2]/10]);
+		OLED_P8x16(96,0,&num[gas[2]%10]);
+
+
+
+		OLED_P8x16(24,2,&num[temperature[1]/10]);
+		OLED_P8x16(32,2,&num[temperature[1]%10]);				
+		OLED_P8x16(88,2,&num[temperature[2]/10]);
+		OLED_P8x16(96,2,&num[temperature[2]%10]);
+}
+
+
+/********************************
+*函数：App_Display_Alarm_Config(void)
+*
+*功能：告警显示初始化
+*********************************/
+void App_Display_Alarm_Config(void)
+{		
+  OLED_CLS();
+	App_Display_Alarm();
+}
+
+
+
+
+
+/********************************
+*函数：App_Display_Alarm(void)
+*
+*功能：告警显示
+*********************************/
+void App_Display_Alarm(void)
+{		
+  if(flag_alarm[1]==1 && max_qiti!=0 && max_wendu!=0)OLED_P8x16Str(0,0,"Node1:Alarm ON ");	
+	else                                               OLED_P8x16Str(0,0,"Node1:Alarm OFF");
+	
+	if(flag_alarm[2]==1 && max_qiti!=0 && max_wendu!=0)OLED_P8x16Str(0,2,"Node2:Alarm ON ");
+	else                                               OLED_P8x16Str(0,2,"Node2:Alarm OFF");	
+	
+	
+	if(point_beep[1]==1)OLED_P8x16Str(0,4,"Node1:Warnning");
+	else                OLED_P8x16Str(0,4,"Node1:Normal  ");
+
+	if(point_beep[2]==1 )OLED_P8x16Str(0,6,"Node2:Warnning");
+	else                 OLED_P8x16Str(0,6,"Node2:Normal  ");
+	
+}
+
+
+/********************************
+*函数：App_Display_Update(void)
+*
+*功能：主机屏幕显示程序
+*********************************/
+void App_Display_Update(void)
+{	
+	 if(mode_set==0){//非设置状态
+		 
+			if(cnt_display>1000){//1000毫秒更新一次
+
+				shift_display++;
+				if(shift_display>3){//3秒切换一次显示内容
+				   shift_display=0;
+					
+					 if(mode_display==1){
+					    mode_display=0;
+						  App_Display_Sensor_Config();
+						 
+					 }else{
+					    mode_display=1; 
+						  App_Display_Alarm_Config();
+						 
+					 } 
+				}
+	
+				switch(mode_display)
+				{
+					case 0://模式0显示传感器信息		
+                  App_Display_Sensor();
+					break;
+					
+					case 1://模式1显示告警信息
+						      App_Display_Alarm();
+					break;
+				
+					default:break;
+				}			
+				
+			 cnt_display=0;
+			}
+  }
+	
+}
+
+	
+///********************************
+//*函数：App_Syn_Led(void)
+//*
+//*功能：未收到同步心跳，熄灯
+//*********************************/
+//void App_Syn_Led(void)
+//{
+//    
+//		if(cnt_syn==0){ //绿灯灭表示断线
+//		
+//				LED1_OFF;
+//			
+//		 }else{
+//		
+//				LED1_ON;
+//		}
+//}
+	 
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

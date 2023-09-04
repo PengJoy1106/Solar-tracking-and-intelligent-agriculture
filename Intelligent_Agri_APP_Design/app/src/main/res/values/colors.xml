@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="red">#ffffff</color>
+    <color name="transparent_red">#e0e0e0e0</color>
+    <color name="transparent">#00000000</color>
+    <color name="bantou">#e0000000</color>
+    - <!-- 首页 字体  main0代表按下  main1代表未被选中
+  -->
+    <color name="main0">#5FC897</color>
+    <color name="main1">#8A9692</color>
+    <color name="line01">#c6c6c6</color>
+</resources>

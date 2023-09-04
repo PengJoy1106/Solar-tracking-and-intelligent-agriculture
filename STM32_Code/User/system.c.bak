@@ -1,0 +1,148 @@
+#include "system.h"         //头文件管理
+
+
+
+unsigned int system_1ms;
+unsigned char system_point=0;//系统指针
+
+
+
+
+/********************************
+*函数：interrupt_1ms(void)
+*
+*功能：1ms事件更新，节省定时器中断资源
+*********************************/
+void interrupt_1ms(void)
+{
+	  if(system_1ms>0){//1ms中断
+		 	  
+			  system_point++;//系统进程指针
+			  cnt_check_point++;
+         
+			   cnt_display++;
+				 timer3cnt++;//定时器中断回调函数			
+				 cnt_led++;
+			   cnt_check++;
+				 cnt_beep++;
+         if(cnt_esp8266>0)cnt_esp8266++;
+			   if(keycnt)keycnt++;
+				 if(cnt_syn>0) cnt_syn--;
+			   system_1ms=0;	
+		}
+}
+
+
+/********************************
+*函数：system_config(void)
+*
+*功能：初始化系统配置
+*********************************/
+void system_config(void)
+{
+    unsigned char i;
+	
+		SystemClock_Config();  //RCC时钟配置  				
+		
+		Usart_Config();        //USART配置 
+
+		Timer_Config();        //TIMER配置	
+		
+		GPIO_Config();         //GPIO配置  
+
+	  Key_Config();          //按键初始化
+		
+    esp8266_exit_cipsend();//ESP8266退出透传模式
+
+	  CO2_Config(UART1,5000);//CO2传感器配置
+	
+
+#if( TYPE == TYPE_POINT1 ||  TYPE == TYPE_POINT2 )//节点1采集温度、可燃气浓度、节点2采集可燃气浓度
+		
+     ADC_Config();       //ADC初始化
+		
+#else                    //主机初始化屏幕
+				
+			SPI_Config();//SPI初始化
+			
+			OLED_Config();//屏幕初始化
+			
+			App_Display_Sensor_Config();//主机显示初始化			
+		 
+#endif
+
+		 cnt_syn=5000;//同步心跳计数值复位
+}
+
+
+
+/********************************
+*函数：system_start(void)
+*
+*参数a:system_point进程指针
+*
+*参数b:system_cnt进程切换计时
+*********************************/
+void system_start(void)
+{ 
+	
+	for(;;){//无限循环
+	        
+		      interrupt_1ms();//1毫秒计数更新事件
+		
+					switch(system_point)
+					{	
+						
+						case 1:
+                    App_GetSensor_Point();//节点获取传感器进程
+						break;
+
+						case 2:
+                    esp8266_sta_connect();   //节点无线收到处理程序				
+						break;
+
+						case 3:
+						      //  uart_set_net_info();
+
+						break;
+
+						case 4:	
+					
+						        
+									 system_point=0;
+						break;
+						
+						default:
+									 system_point=0;
+						break;
+
+					}
+	}
+
+}
+
+
+/********************************
+*函数：main(void)
+*
+*功能：主函数入口
+*********************************/
+int main(void)
+{
+	
+  system_config();//初始化系统
+	
+	system_start(); //进入系统
+	
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
